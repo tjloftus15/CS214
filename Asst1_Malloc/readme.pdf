@@ -1,0 +1,59 @@
+Asst1 Readme
+
+Description:
+In this document:
+testT() refers to testCDT('T')
+testC() refers to testCDT('T')
+testD() refers to testCDT('D')
+ptr == pointer
+ptrArray[150]: in every test, we created a ptrArray which holds all malloced ptr addresses
+
+malloc()
+- every allocation includes a struct which holds the size of the data and whether that data is free. this means every allocation has a size of allocation size+2, since the each struct is 2 bytes. Also, instead of wasting space on an address ptr for next, we calculate next every time we traverse.
+
+- At the beginning of each test, we initialize the front of myblock to be a struct of size 255. This is our first case, where we have not allocated anything using malloc. Size of 255 is our flag for no allocations yet. Once we attempt to malloc the first time, we see this 255 size, and realize we have not malloced yet
+
+- after the first allocation, we declare the next metadata block after it at size of struct+size away from the first one. We set this struct's size to be 254, the flag for our program that says this struct is yet to initialized. we do this after every allocation
+
+- after every allocation, we make sure that the address for our next struct is still inside our array. If it is not, we do not declare a new one, and just return our malloced ptr. If it is not, we declare a new one. Also, before that, we make sure that there is enough room at the end of myblock for the new data we want to allocate. If there is not enough room, meaning either it is both in and out of the array or the array is full, we return NULL and do not allocate
+
+- instead of keeping a memory count, every time we enter malloc, we traverse down my block using getNext(), by constantly computing the next struct location using struct size+size of current. If we reach the end of myblock and we have not found a free struct and/or not found a struct where our new data would fit, we assume memory is full, and return NULL.
+
+- here, we also only want to malloc an even size, so if size%2==1, then we increment size. We pad it
+
+
+free()
+- if we pass a NULL ptr to free, then we print an error, since you cannot free an address which is NULL.
+
+- if we pass an address to free that is either less than the starting address of myblock or equal to myblock+5000, we know we have been passed an address that was not allocated by malloc. we then print an error and return, since you cannot free a ptr not allocated by malloc.
+
+- otherwise, we simply take the passed address, subtract 2 from it since that is the size of our struct, and then set the struct there to be free.
+
+- after, we decrement ptrCount and utilize shiftAddr, which is mentioned later on
+
+
+shiftAddr
+This is included in the readme due to its status in the program. it used to be a function in mymalloc.c, but needed to be moved into testCD(). It would be called after free, and it would be passed the index in ptrArray of the pointer that was freed. It would then shift every address in ptrArray over one to the left starting at this index, systematically eliminating the freed ptr. Also, this allowed us to randomly free ptrs, by simply getting a random number using rand() and then modding it by ptrCount, which counted the number of current allocated ptrs.
+
+initialize()
+- initializes a struct which has not been assigned to yet as being used, and also sets the correct size from 254.
+
+clear()
+- this is used the 'clear' myblock after each run, since we need a clean and unused myblock every time we run a test. We call this after each test.
+
+getFront(): makes myblock accessable from memgrind by sending its address to memgrind. Myblock would otherwise be unreachable.
+
+
+getNext(): traverse function that replaces a '->next' field
+
+memgrind.c
+In memgrind.c is where we have several functions to test the workload of our implementation of malloc() and free(). For each function we place time stamps using the gettimeofday() function in the <sys/time> library. One stamp at the beginning of each function serves as the start timer, followed by our workload for each function which tests malloc() and free(), and the second timestamp which acts as a timer stopper. We then compute the difference and convert to miliseconds. Within our main function we add the time for the workload of each function to a stored variable and output the average time for each over 100 runs.
+After several runs of memgrind we found that the least work was done in testA() as it is always the fastest case. Interestingly, we expected testB() to be the next least work, however that was not the case and testC() and testD() were each computed faster. Of our own designed cases, testK() was more work done and slower than testT(), testK()'s workload was more similar to testD() while testT()'s workload was more inline with testC()
+ 
+
+
+
+Authors: 
+Kyle Myers, Timothy Loftus
+
+

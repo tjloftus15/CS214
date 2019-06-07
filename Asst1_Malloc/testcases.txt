@@ -1,0 +1,24 @@
+Asst1 TestCases:
+
+testCDT(..)
+- to follow good coding practice, instead of copying and pasting code, we made tests C D and T in one method. T is one of our created tests, while C and D were given. You simply pass the char of the test you want to run. the switch statement in the 'else' of this function decides, based on the char you passed, which specifics of each test to run.
+
+
+testCDT('C') || testCDT('D')
+- To randomize the sequence of malloc() calls, we first flipped a coin ten times in real life to figure out what values between 0 to 9 would represent free and malloc. Once we did that, we then got a random number in our program and modded it by 10, resulting in a value between 0-9.
+
+- To randomly free, we got a random number and then modded it by the number of ptrs we had (D only)
+
+- To randomly choose number of bytes, we got a random number and modded it by 65, since 64 is the max number of bytes we can allocate. We also make sure we try to malloc at least 1 byte.
+
+- Also, if we currently have no ptrs, we force it to malloc instead of free, as directed by the Professor
+
+
+testK - one of two created test cases
+- testK():
+We malloc 48 bytes (50 with size of struct) 150 times. After 100 allocations, the block is now full, and we must free. Here, we free from the front. We then go back and forth from malloc and free, while each successive free is one struct further down myblock. This tests our malloc() and free to be able to always free the correct block and never overflow the memory block.
+	
+	
+testCDT('T') - our other created testcase
+
+We keep track of number of memory allocations (calls to malloc), and stop when we reach 150. Here, like testCDT('C') and testCDT('D'), we use the same randomizing method. The difference here is, on even numbe of allocations, we malloc 15 bytes, and on odd, we malloc 30 bytes. We free randomly as well.

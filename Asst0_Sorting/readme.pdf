@@ -1,0 +1,11 @@
+Overview: stringsorter is an agorithm which takes in only one command line arguement, and retrieves the words from it. Our program uses the function isalpha() to find where the letters are, and to decide when we are at a location in the input in which it is not a letter. We store our words into linked lists connected to a hash table
+
+Structures: The hash table has 52 buckets, one for each letter in the alphabet, both lowercase and uppercase. Positions 0-25 are lowercase, and 26-51 are uppercase. At each bucket, there is a linked list which is only intialized when we encounter a word of that letter. We utilize these linekd lists to order the words alphabetically, whereas the hash table allows for easy access to these lists. Our hash function to get into the correct bucket is simply utilizing the ascii values of the alphabet characters. 
+
+Error: An error condition would simply be when there are too many arguements passed to the program intially
+
+Bugs: Entering any symbol such as \ , $ , ; , etc, so any command line special characters, does not allow the program to run.
+
+Challenges: A challenege we encountered was when we would malloc space for our new word that we were copying out of the command line string, we were not adding the delimiter onto the end of it. So, when we tried to use the function strlen() to get the length of our word afterwards, we were getting a heap buffer overflow error. In other words, strlen() was never finding the delimiter character, '\0', because there wasnt one. I was not aware that malloc didnt add on the delimiter, I thought that it did. Now I know it does not
+
+Authors: Timothy Loftus, Kyle Myers

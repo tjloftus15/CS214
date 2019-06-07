@@ -1,0 +1,113 @@
+Asst3: To Build a better open() 
+
+Description: Completed Base, Extension A
+This program allows users (client machines) to access files and manipulate them on a server that lives on a user specified ilab machine. 
+	e.g. - A client will run the netfileserver using ./netfileserver on an ilab machine such as basic.cs.rutgers.edu
+	     - The client will then run their code by linking their "clientprogram.c" with our library "libnetfiles.c"
+	     - The host is resolved to the ilab machine that the user exectued the file server on, meaning that in their program, they will need to 		       first call netserverinit and provide the ilab machine where the server is currently running, followed by the net functions provided for 		       manipulating the files
+
+
+
+Included:
+-->libnetfiles.h: Includes struct and function definitions for libnetfiles.c and netfileserver.c
+-->libnetfiles.c:Base Program, Extension A
+-->netfileserver.c: The actual file server program 
+-->Makefile: compiles libnetfiles.c and netfileserver.c using -pthread 
+	     In order to run client programs, replace the "newclient.c" with the desired clientprogram.c within the Client compile statement in the 		     Makefile and link with libnetfiles.c, and include "Client" in the first line of the Makefile provided folowing the all command
+-->testplan.txt: Includes test process and input/output results
+
+
+Data Structures:
+
+-->struct director{} 
+	Description: Responsible for holding onto the value from the buffer as messages are sent back and forth to the client, the struct holds string 			     values that have the infomation needed to perform the correct operations on files on the server
+	Members: msg_len, arg1, arg2, arg3
+		**Note: msg_len is a value that counts everything after the value of msg_len in the buffer written across the socket. For example, if 			  the buffer == "9,O,f.txt,1", the 9 counts everything after the "9,".
+		**Another Note: In thread_director(), the arg2 arguement is intentionally left null in both the close section and "T" section of 			  thread_director()
+		
+-->struct passer{} 
+	Description: Holds the values of the new socket descriptor that points to the socket in use by the client, as well as the client name that is 			     executing the code and using the libnetfiles library 
+	Members: newsockfd, clientID
+
+-->struct users{} 
+	Description: A linked-list of users who are currently accessing the netfileserver, with its memebers at each node containing information 			     aboutthe file that the client is accessing and the modes that it has created the socket with. 
+	Members: open_type, mode, user, next
+
+-->struct node{} 
+	Description: A linked list that holds the pathnames of all the currently open files and has a pointer to the users list who have that file open 
+	Members: path, users, next
+
+-->struct hash_table{}  
+	Description:A hashtable that stores the pointer to the front of the node list
+	Members: first
+
+-->Overall global state data structure functionality
+	Our 'global state' data structure consists of a hash table, whose hash function is a computation using the pathname, and 2 other linked list layers. The first linked list, struct node{}, connects to a bucket on the table. Each bucket has its own list. These represent the pathnames that have been opened that have hashed to this location. The second linked list, struct users{}, is connected to a struct node{} node. Each struct node{} node has a user list. This specifies the users which have this path open, with their each havng an extension A filemode/open type, the corresponding client ID, or IP Address, and the flags of the file. We also have a linked list that keeps track of the extensionA filemode/open type of each user.
+
+
+
+Functions:
+
+-->int netserverinit() 
+	Params: Hostname, mode
+	Description: This function resolves the hostname to an actual address and send a message back to the client with the connection request response 
+
+-->ssize_t netopen()
+	Params: Pathname, filemode
+	Description: Handles opening the files and assigning the correct errno values upon an unsuccesful attempt to open a file
+
+-->void * thread_director()
+	Params: args
+	Description: Used to keep track of and efficiently direct worker threads as they handle the assigned tasks 
+
+-->ssize_t netwrite()
+	Params: fildes, buf, nbyte 
+	Description: Takes in the file descriptor and a buffer that has the content to be written to the file as well as the number of bytes that were 			     succesfully written to the file 
+-->int check_completer()
+	Params: h
+	Descrition: Checks to ensure that the entire 
+
+-->int netclose()
+	Params:fd
+	Description: Performs a call to close() locally on the file and ensures that the provided file descriptor isvalid, if not reports the 			     coinciding error numbers
+--> int hash()
+	Params: path
+	Description: Hash function used to place the pathnames into the appropriate position of our hashtable
+		     	returns a value to indicate success or failure
+
+--> void insert_open()
+	Params: clientID, o_type
+	Description: Inserts the correct filemode given in netserverinit into a list that is used later
+		     
+
+--> int get_open_type()
+	Params: clientID
+	Description: Retrieves the opentype that is the mode the client accesses the fileserver with from the clientID number
+		     returns a value to indicate success or failure
+
+--> int delete_user()
+	Params: h, args
+	Description: Traverses the linked list of users and when a user is no longer accessing the fileserver and has completed their work on files
+		     returns a value to indicate success or failure
+
+--> int search_directory()
+	Params: fdpath, userID, a 
+	Description: Takes in the userID and the mode that they are opening the file on the provided file path returns a value to indicate success or 			     failure
+
+-->int check_open_type()
+	Params: fdpath, a
+	Description: Given a pathname, this function determines whether the current user can access a file by checking the intital mode that the file 			     was opened in returns a value to indicate success or failure
+-->struct director * input_decoder()
+	Params: buffer
+	Description: Called by the thread_director function, parses the input string written by the client machine and decodes/checks the information 			     passed to the server returns a pointer to the struct director which holds the different given inputs
+		
+Locking information: 
+-->We utilize mutex locks around the small sections of code that could produce an errno value because the errno values have the potential to persist across threads and we needed to make sure that our errors are being assigned correctly for that particular worker thread and is not a value leftover from a previous threads attempt at completing its task 
+
+
+Error Information:
+--> We defined an error for INVALID_FILE_MODE using #define as instructed in the assignment description, INVALID_FILE_MODE is the value assigned to the errno value 132. 132 was chosen due to the fact that the already defined arror codes range from 1-131. If you wish to print the error description associated with the INVALID_FILE_MODE number use the variable errprinter, which is also defined in the libnetfiles.h using a #define statement
+
+
+@authors:
+Timothy Loftus, Kyle Myers

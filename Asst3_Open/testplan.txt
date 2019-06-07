@@ -1,0 +1,139 @@
+Asst3: Testplan
+
+To test:
+--> Compile test client code by linking with libnetfiles.c 
+--> Run the server side using ./netfileserver
+--> Run the client side using newclient /* or whatever client program you want to run*/
+	--> Important: netserverinit needs to be called to before any net-functions
+	--> Additionally, client calls to open, read, write, close need to be netopen, netread...etc.
+
+
+Test Code
+
+#include <pthread.h>
+#include "libnetfiles.h"
+
+//this needs to be filled in with netserverinit, netopen, netwrite etc
+
+int main(int argc, char ** argv){
+	int fd1, fd2, fd3, fd4, fd5, fd6, fd7, fd8, fd9, fd10, fd11;
+	int result=netserverinit("basic.cs.rutgers.edu", 0);
+	if(result==-1){
+		printf("ERROR newclient.c: could not locate host name\n");
+		return 0;
+	}
+	fd1=netopen("/ilab/users/tjl121/Music/Asst3/testfiles/test1.txt", 2);
+	if(fd1==-1){
+		printf("ERROR newclient.c: could not open file\n");
+		return 0;
+	}
+	////////////////////////////////////////////////
+	fd2=netopen("/ilab/users/tjl121/Music/Asst3/testfiles/test2.txt", 2);
+	if(fd2==-1){
+		printf("ERROR newclient.c: could not open file\n");
+		return 0;
+	}
+	fd3=netopen("/ilab/users/tjl121/Music/Asst3/testfiles/test3.txt", 2);
+	if(fd3==-1){
+		printf("ERROR newclient.c: could not open file\n");
+		return 0;
+	}
+	fd4=netopen("/ilab/users/tjl121/Music/Asst3/testfiles/test4.txt", 2);
+	if(fd4==-1){
+		printf("ERROR newclient.c: could not open file\n");
+		return 0;
+	}
+	result=netwrite(fd4, "yo", 2);
+	if(result==-1)
+		printf("errno == %d\n", errno);	
+		
+	fd5=netopen("/ilab/users/tjl121/Music/Asst3/testfiles/test2.txt", 1);
+	if(fd5==-1)
+		printf("errno == %d\n", errno);	
+		
+	result=netclose(fd3);
+	if(result==-1)
+		printf("errno == %d\n", errno);	
+	result=netclose(fd1);
+	if(result==-1)
+		printf("errno == %d\n", errno);
+	result=netclose(fd2);
+	if(result==-1)
+		printf("errno == %d\n", errno);	
+	result=netclose(fd5);
+	if(result==-1)
+		printf("errno == %d\n", errno);	
+	
+	return 0;
+}
+
+Test-Run
+sh-4.2$ ./netfileserver
+----
+full message = 3,T,0
+the following is the decoded input:
+input->msg_len=3
+input->arg1=T
+input->arg2=(null)
+input->arg3=0
+----
+full message = 54,O,/ilab/users/tjl121/Music/Asst3/testfiles/test1.txt,2
+the following is the decoded input:
+input->msg_len=54
+input->arg1=O
+input->arg2=/ilab/users/tjl121/Music/Asst3/testfiles/test1.txt
+input->arg3=2
+----
+full message = 54,O,/ilab/users/tjl121/Music/Asst3/testfiles/test2.txt,2
+the following is the decoded input:
+input->msg_len=54
+input->arg1=O
+input->arg2=/ilab/users/tjl121/Music/Asst3/testfiles/test2.txt
+input->arg3=2
+----
+full message = 54,O,/ilab/users/tjl121/Music/Asst3/testfiles/test3.txt,2
+the following is the decoded input:
+input->msg_len=54
+input->arg1=O
+input->arg2=/ilab/users/tjl121/Music/Asst3/testfiles/test3.txt
+input->arg3=2
+----
+full message = 54,O,/ilab/users/tjl121/Music/Asst3/testfiles/test4.txt,2
+the following is the decoded input:
+input->msg_len=54
+input->arg1=O
+input->arg2=/ilab/users/tjl121/Music/Asst3/testfiles/test4.txt
+input->arg3=2
+----
+full message = 7,W,13,yo
+the following is the decoded input:
+input->msg_len=7
+input->arg1=W
+input->arg2=13
+input->arg3=yo
+----
+full message = 54,O,/ilab/users/tjl121/Music/Asst3/testfiles/test2.txt,1
+the following is the decoded input:
+input->msg_len=54
+input->arg1=O
+input->arg2=/ilab/users/tjl121/Music/Asst3/testfiles/test2.txt
+input->arg3=1
+----
+full message = 4,C,11
+the following is the decoded input:
+input->msg_len=4
+input->arg1=C
+input->arg2=(null)
+input->arg3=11
+----
+full message = 3,C,7
+the following is the decoded input:
+input->msg_len=3
+input->arg1=C
+input->arg2=(null)
+input->arg3=7
+
+
+
+
+

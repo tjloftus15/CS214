@@ -1,0 +1,76 @@
+Asst2: KeySpace Construction 
+
+Data Structures
+
+struct hash{}
+--> This is the main data stucture which is a hastable that holds linked lists at each position in the table
+--> there are 36 spaces in the table (0-9)+(a-z) = 36, where each spot is the beginning is stored according to the letter, or number, that it starts with
+--> contains a pointer to the head of the word list stored at that spot in the table
+
+struct words{}
+--> this is a linked list that is used to store the words as we find them, each word, or text string, is stored according to the letter, or number, that it starts with
+
+struct blarp{}
+--> This struct is a linked list that is utilized only when we need to hold onto the preceding buffer information
+--> Specifcally for the case where no delimeter is found between the final spaces of the buffer 
+
+struct rd{}
+--> rd is the linked list which helps us mimic recursion. It holds all the information to read a past directory from a given or current filepath
+--> when we encounter a directory in our current directory, we save all the information in a node in this linked list
+--> We then go into a new directory, and return to the old one once the new one is finished
+
+Function Descriptions
+
+toLowerCase()
+--> function that is used to turn the letters in a string into lowercase
+--> we utilize this function when we need to store our found words and file names and convert them all to lowercase chars as directed by the instructions for output
+
+readOverflow()
+--> this method is designed to read our overflow data structure. Since we save our wrods which go off the end of the buffer in a linked list, this takes the linked list and puts the words back together. It goes from front to back, constantly adding to the end of the word. So, for example:
+	
+	if one buffer read == hello.to;y
+	and the next one is == ou!friends	
+--> read overflow would take the stored 'y' and the stored 'ou' and put them together to get 'you'
+
+cleanUpOverflow()
+--> function that is used to make sure that there is no left over nodes in our blarp linked list
+--> it is called when we read a new file
+
+cat_new_path()
+--> method that takes care of concatenating the current filename to its path as 
+--> as we find the name of the file we are reading from, we add it onto the end of our pathname ending in the current diretory
+
+getFileName()
+--> takes the current path that is being worked on and extracts the file name off the end 
+--> used when printing our content to the output file given
+
+comparer()
+--> fucntion checks the position that the current and new nodes should be according to the sorting speculations in the assingment description
+--> it checks to see which char should be placed in front of the other and is used when sorting the words and files
+
+getHash()
+--> this function is used to get the positon in the table that we are going to insert the current word
+--> getHash assumes that the char being passed in is either alnum, meaning a-z, 0-9
+
+void * findFile()
+--> this function searches through our data structures and compares the files with their neighbors, used to insert and sort
+--> sets the appropriate pointer to the next file in the list
+
+printToFile()
+--> our method for actually printing to the output file that is provided by the user
+--> we check to see if the provided file has the correct access levels and if not inform the user and terminate the program
+--> if a file that the user provided exists, we prompt the user for input on whether or not to proceed with overwriting the file
+     --> the user is prompted to enter 'y' to execute ovewriting the file and 'n' to not allow the overwrite
+     --> the trailing input after the first character is ignored 
+
+      Ex. yieubdiwuebdiuwbfiub--> still treated as 'y' and the file is overwritten
+
+Contained in Asst2.tgz
+--> Makefile, program can be compiled with make command and executables can be removed with make clean command
+--> invertedIndex.h, header file containing our definitions of functions and data structures, as well as our library #include statements
+--> index.c, this is where our program is written and contains our source code
+--> tester, a directory that contains the files we have been using to test our program
+--> readme.pdf, the file you are reading, contains descriptions of functions and additional info about user input etc.
+
+
+Authors: Timothy Loftus, Kyle Myers
